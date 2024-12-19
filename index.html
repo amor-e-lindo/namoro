@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nosso Dia Especial</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: linear-gradient(to bottom, #2b1055, #7597de);
+      font-family: 'Courier New', Courier, monospace;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #content {
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      opacity: 0;
+    }
+
+    h1 {
+      font-size: 3.5rem;
+      margin: 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    p {
+      font-size: 1.5rem;
+      margin-top: 1rem;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+    }
+
+    .date {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      color: #ffd700;
+    }
+
+    button {
+      margin-top: 2rem;
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 5px;
+      background: #ff477e;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.1);
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bg"></canvas>
+  <div id="content">
+    <h1 id="main-title">Hoje é um dia especial!</h1>
+    <p id="main-text">19 de dezembro de 2024</p>
+    <p class="date">❤️</p>
+    <button id="revealBtn">Clique aqui</button>
+  </div>
+
+  <script>
+    // GSAP Animation for Content Fade-In
+    gsap.to("#content", { opacity: 1, duration: 2 });
+
+    // Three.js Background Animation
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: document.querySelector('#bg') });
+
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.position.setZ(30);
+
+    const starGeometry = new THREE.BufferGeometry();
+    const starMaterial = new THREE.PointsMaterial({ color: 0xffffff });
+
+    const starVertices = [];
+    for (let i = 0; i < 1000; i++) {
+      const x = (Math.random() - 0.5) * 2000;
+      const y = (Math.random() - 0.5) * 2000;
+      const z = (Math.random() - 0.5) * 2000;
+      starVertices.push(x, y, z);
+    }
+
+    starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+    const stars = new THREE.Points(starGeometry, starMaterial);
+    scene.add(stars);
+
+    function animate() {
+      requestAnimationFrame(animate);
+      stars.rotation.x += 0.001;
+      stars.rotation.y += 0.001;
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Button Interaction
+    document.getElementById('revealBtn').addEventListener('click', () => {
+      gsap.to("#content", { opacity: 0, duration: 1, onComplete: () => {
+        document.getElementById('main-title').innerText = 'Nosso início!';
+        document.getElementById('main-text').innerText = 'Foi neste dia que fizemos uma promessa de amor.';
+        document.querySelector('.date').innerText = 'Lembre-se sempre de 19 de dezembro de 2024 ❤️, Te amo!';
+        document.getElementById('revealBtn').style.display = 'none';
+        gsap.to("#content", { opacity: 1, duration: 2 });
+      }});
+    });
+
+    // Handle Resizing
+    window.addEventListener('resize', () => {
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+    });
+  </script>
+</body>
+</html>
